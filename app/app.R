@@ -17,9 +17,16 @@ cc_districts <- readOGR("City_Council_Districts.geojson") #read city council dis
 
 # Define UI for application that draws a histogram
 ui <- fluidPage(
-    mainPanel(
-        tabsetPanel(
-            tabPanel()
+    sidebarLayout(
+        sidebarPanel(
+            
+        ),
+        
+        mainPanel(
+            
+            tabsetPanel(
+                tabPanel()
+            )
         )
     )
 )
