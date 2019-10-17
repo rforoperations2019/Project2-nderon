@@ -49,7 +49,7 @@ ui <- fluidPage(
         mainPanel(
             
             tabsetPanel(
-                tabPanel("Map"),
+                tabPanel("Map", leafletOutput(outputId = "leaflet")),
                 tabPanel("Time Trends"),
                 tabPanel("Data", dataTableOutput(outputId = "DT"))
                 
@@ -62,7 +62,7 @@ ui <- fluidPage(
 server <- function(input, output) {
     
     #Reactive subset based on inputs
-    blotter_subset <- reactive({    
+    blotter_subset <- reactiveValues({    
         req(input$selected_districts, input$date_range, input$selected_hierarchy)
         filter(blotter_data, blotter_data$COUNCIL_DISTRICT %in% input$selected_districts & 
                    between(INCIDENTTIME, as.POSIXct(input$date_range[[1]]), as.POSIXct(input$date_range[[2]])) &
@@ -74,9 +74,9 @@ server <- function(input, output) {
         addTiles(group = "OSM (default)") %>% #default basemap
         addProviderTiles(providers$CartoDB.Positron, group = "Positron") %>% #extra basemaps
         addProviderTiles(providers$Stamen.Toner, group = "Toner") %>%
-        addAwesomeMarkers(lng = blotter_subset$X, lat = blotter_subset$Y, icon = icons) %>% #markers
+        addAwesomeMarkers(lng = blotter_subset()$X, lat = blotter_subset()$Y, icon = icons) %>% #markers
         setView(lng = -79.9959, lat = 40.4406, zoom = 12) %>% #default view
-        addLegend(values = blotter_subset$type, colors = c("red", "orange", "grey"), labels = levels(blotter_subset$type)) %>% #lengend
+        addLegend(values = blotter_subset()$type, colors = c("red", "orange", "grey"), labels = levels(blotter_subset()$type)) %>% #lengend
         addPolygons(data = historic, color = "red", fillColor = "#495D4E", opacity = 1, weight = 1, fillOpacity = 0.5, group = "Historic Districts") %>% #historic district polygons
         addPolylines(data = cc_districts, opacity = 1, weight = 1, group = "City Council") %>% #city council district polylines
         addLayersControl(
