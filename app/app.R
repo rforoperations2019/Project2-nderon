@@ -11,8 +11,8 @@ blotter <- read.csv("Blotter_Data_Archive.csv") #Read blotter data
 blotter$INCIDENTTIME <- strptime(x = as.character(blotter$INCIDENTTIME), #Convert INCIDENTTIME to datetime
                                  format = "%Y-%m-%dT%H:%M:%S")
 blotter$type <- cut(blotter$HIERARCHY, c(-Inf, 9, 98, Inf), labels = c("Type 1 - Major Crime", "Type 2 - Minor Crime", "No Data or None")) #Convert hierarchy to bucketed factors
-blotter_subset <- blotter[blotter$INCIDENTTIME >= "2018-01-01" & blotter$INCIDENTTIME <= "2018-12-31" & blotter$X <= -78 & blotter$Y >= 39 & !is.na(blotter$type),]
-blotter_subset <- blotter_subset[sample(1:nrow(blotter_subset), 200),]
+blotter_data <- blotter[blotter$INCIDENTTIME >= "2018-01-01" & blotter$INCIDENTTIME <= "2018-12-31" & blotter$X <= -78 & blotter$Y >= 39 & !is.na(blotter$type),]
+blotter_data <- blotter_data[sample(1:nrow(blotter_subset), 200),]
 historic <- readOGR("City_Designated_Historic_Districts.geojson.json") #read historic district dat
 cc_districts <- readOGR("City_Council_Districts.geojson") #read city council district data
 
@@ -37,6 +37,13 @@ ui <- fluidPage(
 
 # Define server logic required to draw a histogram
 server <- function(input, output) {
+    
+    blotter_subset <- reactive({    #Reactive subset based on inputs
+        req(input$selected_districts, input$date_range, input$selected_hierarchy)
+        filter(blotter_data, COUNCIL_DISTRICT %in% input$selected_districts & 
+                   between(INCIDENTTIME, as.POSIXct(input$date_range[[1]]), as.POSIXct(input$date_range[[2]])) &
+                   type %in% input$selected_hierarchy)
+    })
     
     output$DT <- renderDataTable({    #Datatable code
         DT::datatable(blotter_subset(), options = list(scrollY = "300px", scrollX = T))
