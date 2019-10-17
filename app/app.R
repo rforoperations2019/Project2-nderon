@@ -20,7 +20,11 @@ cc_districts <- readOGR("City_Council_Districts.geojson") #read city council dis
 ui <- fluidPage(
     sidebarLayout(
         sidebarPanel(
-            
+            checkboxGroupInput(inputId = "selected_districts",
+                               label = "Select Council District(s)",
+                               choices = c(1:9),
+                               selected = c(1:9)
+            )
         ),
         
         mainPanel(
