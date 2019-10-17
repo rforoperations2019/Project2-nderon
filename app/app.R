@@ -16,15 +16,25 @@ blotter_data <- blotter_data[sample(1:nrow(blotter_subset), 200),]
 historic <- readOGR("City_Designated_Historic_Districts.geojson.json") #read historic district dat
 cc_districts <- readOGR("City_Council_Districts.geojson") #read city council district data
 
-# Define UI for application that draws a histogram
+# Define UI
 ui <- fluidPage(
     sidebarLayout(
+        #Sidebar panel for criteria selection
         sidebarPanel(
+            
+            #City council selection input
             checkboxGroupInput(inputId = "selected_districts",
                                label = "Select Council District(s)",
                                choices = c(1:9),
-                               selected = c(1:9)
-            )
+                               selected = c(1:9)),
+            
+            #date range input
+            dateRangeInput(inputId = "date_range",
+                           label = "Date Range: yyyy-mm-dd",
+                           start = "2009-01-01",
+                           end = "2019-01-01",
+                           startview = "year")
+            
         ),
         
         mainPanel(
