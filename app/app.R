@@ -1,44 +1,28 @@
-#Load required libraries
+##Load required libraries
 library(shiny)
 library(leaflet)
 library(sp)
 library(sf)
 library(rgdal)
 
+##Data prep
+blotter <- read.csv("Blotter_Data_Archive.csv") #Read blotter data
+blotter$INCIDENTTIME <- strptime(x = as.character(blotter$INCIDENTTIME), #Convert INCIDENTTIME to datetime
+                                 format = "%Y-%m-%dT%H:%M:%S")
+blotter$type <- cut(blotter$HIERARCHY, c(-Inf, 9, 98, Inf), labels = c("Type 1 - Major Crime", "Type 2 - Minor Crime", "No Data or None")) #Convert hierarchy to bucketed factors
+blotter_subset <- blotter[blotter$INCIDENTTIME >= "2018-01-01" & blotter$INCIDENTTIME <= "2018-12-31" & blotter$X <= -78 & blotter$Y >= 39 & !is.na(blotter$type),]
+blotter_subset <- blotter_subset[sample(1:nrow(blotter_subset), 25),]
+historic <- readOGR("City_Designated_Historic_Districts.geojson.json") #read historic district dat
+cc_districts <- readOGR("City_Council_Districts.geojson") #read city council district data
+
 # Define UI for application that draws a histogram
 ui <- fluidPage(
 
-    # Application title
-    titlePanel("Old Faithful Geyser Data"),
-
-    # Sidebar with a slider input for number of bins 
-    sidebarLayout(
-        sidebarPanel(
-            sliderInput("bins",
-                        "Number of bins:",
-                        min = 1,
-                        max = 50,
-                        value = 30)
-        ),
-
-        # Show a plot of the generated distribution
-        mainPanel(
-           plotOutput("distPlot")
-        )
-    )
 )
 
 # Define server logic required to draw a histogram
 server <- function(input, output) {
 
-    output$distPlot <- renderPlot({
-        # generate bins based on input$bins from ui.R
-        x    <- faithful[, 2]
-        bins <- seq(min(x), max(x), length.out = input$bins + 1)
-
-        # draw the histogram with the specified number of bins
-        hist(x, breaks = bins, col = 'darkgray', border = 'white')
-    })
 }
 
 # Run the application 
