@@ -15,6 +15,7 @@ blotter$INCIDENTTIME <- strptime(x = as.character(blotter$INCIDENTTIME), #Conver
 blotter$type <- cut(blotter$HIERARCHY, c(-Inf, 9, 98, Inf), labels = c("Type 1 - Major Crime", "Type 2 - Minor Crime", "No Data or None")) #Convert hierarchy to bucketed factors
 blotter_data <- blotter[blotter$INCIDENTTIME >= "2009-01-01" & blotter$INCIDENTTIME <= "2018-12-31" & blotter$X <= -78 & blotter$Y >= 39 & !is.na(blotter$type),]
 blotter_data <- blotter_data[sample(1:nrow(blotter_data), 200),]
+blotter_data$INCIDENTTIME <- as.POSIXct(blotter_data$INCIDENTTIME) #to avoid POSIXlt error
 historic <- readOGR("City_Designated_Historic_Districts.geojson.json") #read historic district dat
 cc_districts <- readOGR("City_Council_Districts.geojson") #read city council district data
 
