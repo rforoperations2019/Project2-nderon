@@ -33,7 +33,13 @@ ui <- fluidPage(
                            label = "Date Range: yyyy-mm-dd",
                            start = "2009-01-01",
                            end = "2019-01-01",
-                           startview = "year")
+                           startview = "year"),
+            
+            #Hierarchy level input
+            checkboxGroupInput(inputId = "selected_hierarchy",
+                               label = "Select Crime Severity",
+                               choices = levels(blotter_data$type),
+                               selected = levels(blotter_data$type))
             
         ),
         
