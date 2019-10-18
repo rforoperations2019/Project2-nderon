@@ -126,11 +126,10 @@ server <- function(input, output) {
     output$time <- renderPlotly({   #Count of incidents by time of day plot
         blot <- blotter_subset()
         (ggplot(blot, aes(x = blot$time)) + 
-             geom_freqpoly(stat = "bin", binwidth = 3600) #+
-             #geom_freqpoly(stat = "bin", binwidth = 3600, aes(color = type)) +
-             #scale_x_datetime(date_label = "%H:%M") +
-             #labs(x = "Time of Day", y = "Count", title = "Count of Police Blotter Incidents by Time of Day")) 
-            )    %>%
+             geom_freqpoly(stat = "bin", binwidth = 3600) +
+             geom_freqpoly(stat = "bin", binwidth = 3600, aes(color = type)) +
+             scale_x_datetime(date_label = "%H:%M") +
+             labs(x = "Time of Day", y = "Count", title = "Count of Police Blotter Incidents by Time of Day")) %>%
         ggplotly(tooltip = c("y", "type"))
     })
     
