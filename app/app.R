@@ -79,11 +79,9 @@ server <- function(input, output) {
         addTiles(group = "OSM (default)") %>% #default basemap
         addProviderTiles(providers$CartoDB.Positron, group = "Positron") %>% #extra basemaps
         addProviderTiles(providers$Stamen.Toner, group = "Toner") %>%
-        #addAwesomeMarkers(lng = blotter_subset()$X, lat = blotter_subset()$Y, icon = icons) %>% #markers
         setView(lng = -79.9959, lat = 40.4406, zoom = 12) %>% #default view
         addLegend(values = blotter_subset()$type, colors = c("red", "orange", "grey"), labels = levels(blotter_subset()$type)) %>% #lengend
         addPolygons(data = historic, color = "red", fillColor = "#495D4E", opacity = 1, weight = 1, fillOpacity = 0.5, group = "Historic Districts") %>% #historic district polygons
-        addPolylines(data = cc_districts, opacity = 1, weight = 1, group = "City Council") %>% #city council district polylines
         addLayersControl(
             baseGroups = c("OSM (default)", "Positron", "Toner"),
             overlayGroups = c("Historic Districts", "City Council"),
@@ -120,6 +118,17 @@ server <- function(input, output) {
                     markerColor = getColor(blot)
                 )
             )
+    })
+    
+    districts <- reactive({
+        return(cc_districts[cc_districts@data$council_district %in% input$selected_districts,])
+    })
+    
+    observe({
+        dist <- districts()
+        leafletProxy("leaflet", data = dist) %>%
+        clearGroup("City Council") %>%
+        addPolylines(data = dist, opacity = 1, weight = 1, group = "City Council") #city council district polylines
     })
     
     #Time of day plot
