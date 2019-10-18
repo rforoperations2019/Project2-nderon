@@ -7,6 +7,7 @@ library(rgdal)
 library(DT)
 library(plotly)
 library(dplyr)
+library(ggplot2)
 
 ##Data prep
 blotter <- read.csv("Blotter_Data_Archive.csv") #Read blotter data
@@ -16,7 +17,11 @@ blotter$type <- cut(blotter$HIERARCHY, c(-Inf, 9, 98, Inf), labels = c("Type 1 -
 blotter_data <- blotter[blotter$INCIDENTTIME >= "2009-01-01" & blotter$INCIDENTTIME <= "2018-12-31" & blotter$X <= -78 & blotter$Y >= 39 & !is.na(blotter$type),]
 blotter_data <- blotter_data[sample(1:nrow(blotter_data), 200),]
 blotter_data$INCIDENTTIME <- as.POSIXct(blotter_data$INCIDENTTIME) #to avoid POSIXlt error
-historic <- readOGR("City_Designated_Historic_Districts.geojson.json") #read historic district dat
+blotter_data$time <- format(blotter_data$INCIDENTTIME, "%H:%M:%S") #From datetime to character
+blotter_data$time <- as.POSIXct(x = blotter_data$time, format = "%H:%M:%S") #From character to continuous time var
+blotter_data$date <- format(blotter_data$INCIDENTTIME, "%m-%d")
+blotter_data$date <- as.POSIXct(x = blotter_data$date, format = "%m-%d")
+historic <- readOGR("City_Designated_Historic_Districts.geojson.json") #read historic district data
 cc_districts <- readOGR("City_Council_Districts.geojson") #read city council district data
 
 # Define UI
@@ -50,7 +55,7 @@ ui <- fluidPage(
             
             tabsetPanel(
                 tabPanel("Map", leafletOutput(outputId = "leaflet")),
-                tabPanel("Time Trends"),
+                tabPanel("Time Trends", plotlyOutput(outputId = "time")),
                 tabPanel("Data", dataTableOutput(outputId = "DT"))
                 
             )
@@ -115,6 +120,18 @@ server <- function(input, output) {
                     markerColor = getColor(blot)
                 )
             )
+    })
+    
+    #Time of day plot
+    output$time <- renderPlotly({   #Count of incidents by time of day plot
+        blot <- blotter_subset()
+        (ggplot(blot, aes(x = blot$time)) + 
+             geom_freqpoly(stat = "bin", binwidth = 3600) #+
+             #geom_freqpoly(stat = "bin", binwidth = 3600, aes(color = type)) +
+             #scale_x_datetime(date_label = "%H:%M") +
+             #labs(x = "Time of Day", y = "Count", title = "Count of Police Blotter Incidents by Time of Day")) 
+            )    %>%
+        ggplotly(tooltip = c("y", "type"))
     })
     
     #Datatable code
