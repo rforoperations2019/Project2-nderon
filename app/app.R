@@ -31,10 +31,10 @@ ui <- fluidPage(theme = shinytheme("flatly"),
     #App title
     titlePanel("Pittsburgh Police Blotter Analysis"),
     
-    sidebarLayout(
+    fluidRow(
         
         #Sidebar panel for criteria selection
-        sidebarPanel(
+        column(2,
             
             #City council selection input
             checkboxGroupInput(inputId = "selected_districts",
@@ -57,7 +57,7 @@ ui <- fluidPage(theme = shinytheme("flatly"),
             
         ),
         
-        mainPanel(
+        column(10,
             
             tabsetPanel(
                 tabPanel("Map", leafletOutput(outputId = "leaflet")),
