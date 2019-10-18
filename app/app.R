@@ -8,6 +8,7 @@ library(DT)
 library(plotly)
 library(dplyr)
 library(ggplot2)
+library(shinythemes)
 
 ##Data prep
 blotter <- read.csv("Blotter_Data_Archive.csv") #Read blotter data
@@ -25,7 +26,7 @@ historic <- readOGR("City_Designated_Historic_Districts.geojson.json") #read his
 cc_districts <- readOGR("City_Council_Districts.geojson") #read city council district data
 
 # Define UI
-ui <- fluidPage(
+ui <- fluidPage(theme = shinytheme("flatly"),
     sidebarLayout(
         #Sidebar panel for criteria selection
         sidebarPanel(
