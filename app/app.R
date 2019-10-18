@@ -100,21 +100,21 @@ server <- function(input, output) {
         )
     })    
     
+    #get color for markers
+    getColor <- function(data) {
+        sapply(data$type, function(type) {
+            if(type == "Type 1 - Major Crime") {
+                "red"
+            } else if(type == "Type 2 - Minor Crime") {
+                "orange"
+            } else if(type == "No Data or None") {
+                "gray"
+            } })
+    }
+    
     #observer to add markers
     observe({
         blot <- blotter_subset()
-        
-        #get color for markers
-        getColor <- function(data) {
-            sapply(data$type, function(type) {
-                if(type == "Type 1 - Major Crime") {
-                    "red"
-                } else if(type == "Type 2 - Minor Crime") {
-                    "orange"
-                } else {
-                    "grey"
-                } })
-        }
         
         #generate and add markers to leaflet map
         leafletProxy("leaflet", data = blot) %>%
