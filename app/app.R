@@ -27,7 +27,12 @@ cc_districts <- readOGR("City_Council_Districts.geojson") #read city council dis
 
 # Define UI
 ui <- fluidPage(theme = shinytheme("flatly"),
+    
+    #App title
+    titlePanel("Pittsburgh Police Blotter Analysis"),
+    
     sidebarLayout(
+        
         #Sidebar panel for criteria selection
         sidebarPanel(
             
