@@ -88,14 +88,11 @@ server <- function(input, output) {
     output$leaflet <- renderLeaflet({
         leaflet() %>%
         addTiles(group = "OSM (default)") %>% #default basemap
-        addProviderTiles(providers$CartoDB.Positron, group = "Positron") %>% #extra basemaps
-        addProviderTiles(providers$Stamen.Toner, group = "Toner") %>%
         setView(lng = -79.9959, lat = 40.4406, zoom = 12) %>% #default view
         addLegend(values = blotter_subset()$type, colors = c("red", "orange", "grey"), labels = levels(blotter_subset()$type)) %>% #lengend
         addPolygons(data = historic, color = "red", fillColor = "#495D4E", opacity = 1, weight = 1, fillOpacity = 0.5, group = "Historic Districts") %>% #historic district polygons
         addLayersControl(
-            baseGroups = c("OSM (default)", "Positron", "Toner"),
-            overlayGroups = c("Historic Districts", "City Council"),
+            overlayGroups = c("Historic Districts"),
             options = layersControlOptions(collapsed = FALSE)
         )
     })    
@@ -126,8 +123,9 @@ server <- function(input, output) {
                     icon = 'ios-close',
                     iconColor = 'black',
                     library = 'ion',
-                    markerColor = getColor(blot)
-                )
+                    markerColor = getColor(blot)),
+                label = ~INCIDENTHIERARCHYDESC
+                
             )
     })
     
@@ -137,7 +135,7 @@ server <- function(input, output) {
     })
     
     #LeafletProxy observer to add city council district polylines
-    observe({
+    observeEvent(blotter_subset(), {
         dist <- districts()
         leafletProxy("leaflet", data = dist) %>%
         clearGroup("City Council") %>%
