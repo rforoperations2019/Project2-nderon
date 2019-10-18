@@ -57,10 +57,14 @@ ui <- fluidPage(theme = shinytheme("flatly"),
             
         ),
         
+        #Main panel
         column(10,
             
             tabsetPanel(
-                tabPanel("Map", leafletOutput(outputId = "leaflet")),
+                #tags$style code used from https://stackoverflow.com/questions/36469631/how-to-get-leaflet-for-r-use-100-of-shiny-dashboard-height
+                tabPanel("Map", 
+                         tags$style(type = "text/css", "#leaflet {height: calc(100vh - 120px) !important;}"), 
+                         leafletOutput(outputId = "leaflet")),
                 tabPanel("Time Trends", plotlyOutput(outputId = "time"), plotlyOutput(outputId = "date")),
                 tabPanel("Data", dataTableOutput(outputId = "DT"), downloadButton(outputId = "downloadData", "Download"))
                 
