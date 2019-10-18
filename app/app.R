@@ -55,8 +55,8 @@ ui <- fluidPage(
             
             tabsetPanel(
                 tabPanel("Map", leafletOutput(outputId = "leaflet")),
-                tabPanel("Time Trends", plotlyOutput(outputId = "time")),
-                tabPanel("Data", dataTableOutput(outputId = "DT"))
+                tabPanel("Time Trends", plotlyOutput(outputId = "time"), plotlyOutput(outputId = "date")),
+                tabPanel("Data", dataTableOutput(outputId = "DT"), downloadLink("DownloadData", "Download"))
                 
             )
         )
@@ -133,11 +133,29 @@ server <- function(input, output) {
         ggplotly(tooltip = c("y", "type"))
     })
     
+    #Time of year plot
+    output$date <- renderPlotly({   #Count of incidents by time of year plot
+        blot <- blotter_subset()
+        (ggplot(blotter_subset(), aes(x = blotter_subset()$date, fill = type)) + 
+             geom_histogram(stat = "bin", bins = 12) +
+             scale_x_datetime(date_label = "%m") +
+             labs(x = "Time of Year", y = "Count", title = "Count of Police Blotter Incidents by Time of Year and Type")) %>%
+            ggplotly(tooltip = c("y", "type"))
+    })
+    
     #Datatable code
     output$DT <- renderDataTable({    
         DT::datatable(blotter_subset(), options = list(scrollY = "300px", scrollX = T))
     })
-    
+        
+    output$downloadData <- downloadHandler(
+        filename = function() {
+            paste("Blotter-data-", Sys.Date(), ".csv", sep="")
+        },
+        content = function(file) {
+            write.csv(data, file)
+        }
+    )
 }
 
 # Run the application 
