@@ -74,6 +74,7 @@ server <- function(input, output) {
                    type %in% input$selected_hierarchy)
     })
     
+    #Rendering main leaflet map
     output$leaflet <- renderLeaflet({
         leaflet() %>%
         addTiles(group = "OSM (default)") %>% #default basemap
@@ -120,10 +121,12 @@ server <- function(input, output) {
             )
     })
     
+    #Reactive function returning city council district polygons based on inputs selected
     districts <- reactive({
         return(cc_districts[cc_districts@data$council_district %in% input$selected_districts,])
     })
     
+    #LeafletProxy observer to add city council district polylines
     observe({
         dist <- districts()
         leafletProxy("leaflet", data = dist) %>%
@@ -156,7 +159,8 @@ server <- function(input, output) {
     output$DT <- renderDataTable({    
         DT::datatable(blotter_subset(), options = list(scrollY = "300px", scrollX = T))
     })
-        
+    
+    #Download Data button
     output$downloadData <- downloadHandler(
         filename = function() {
             paste("Blotter-data-", Sys.Date(), ".csv", sep="")
