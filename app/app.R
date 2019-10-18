@@ -96,7 +96,7 @@ server <- function(input, output) {
                 if(type == "Type 1 - Major Crime") {
                     "red"
                 } else if(type == "Type 2 - Minor Crime") {
-                    "yellow"
+                    "orange"
                 } else {
                     "grey"
                 } })
