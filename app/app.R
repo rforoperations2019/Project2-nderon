@@ -10,6 +10,8 @@ library(dplyr)
 library(ggplot2)
 library(shinythemes)
 
+
+
 ##Data prep
 blotter <- read.csv("Blotter_Data_Archive.csv") #Read blotter data
 blotter$INCIDENTTIME <- strptime(x = as.character(blotter$INCIDENTTIME), #Convert INCIDENTTIME to datetime
