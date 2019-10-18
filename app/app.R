@@ -56,7 +56,7 @@ ui <- fluidPage(
             tabsetPanel(
                 tabPanel("Map", leafletOutput(outputId = "leaflet")),
                 tabPanel("Time Trends", plotlyOutput(outputId = "time"), plotlyOutput(outputId = "date")),
-                tabPanel("Data", dataTableOutput(outputId = "DT"), downloadLink("DownloadData", "Download"))
+                tabPanel("Data", dataTableOutput(outputId = "DT"), downloadButton(outputId = "downloadData", "Download"))
                 
             )
         )
@@ -160,14 +160,16 @@ server <- function(input, output) {
         DT::datatable(blotter_subset(), options = list(scrollY = "300px", scrollX = T))
     })
     
+    
     #Download Data button
     output$downloadData <- downloadHandler(
-        filename = function() {
-            paste("Blotter-data-", Sys.Date(), ".csv", sep="")
+        filename = function(){
+            "Blotter-data.csv"
         },
-        content = function(file) {
-            write.csv(data, file)
-        }
+        content = function(file){
+            write.csv(blotter_subset(), file, row.names = F)
+        },
+        contentType = "text/csv"
     )
 }
 
